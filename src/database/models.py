@@ -19,15 +19,12 @@ class User(Base):
     username = Column(String(50))
     email = Column(String(150), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    avatar = Column(String(255), nullable=True)
     refresh_token = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role = Column(String(50), default=RoleEnum.user, nullable=True)
     confirmed = Column(Boolean, default=False, nullable=True)
 
 
-class Plate(Base):
+class Plate(Base): # add back_mark
     __tablename__ = "plates"
     id = Column(Integer, primary_key=True)
     plate = Column(String, unique=True)
@@ -43,6 +40,18 @@ class Session(Base):
     plate_id = Column(Integer, ForeignKey("plates.id"))
     plate = relationship("Plate", back_populates="sessions")
     total_hours_spent = Column(Integer, default=0)
+    # total_coast
+    # payment 
+
+# class balance 
+# user ( Users.id - username )
+# total_balance (int)
+
+# class parking_properties
+# rate 
+# space_amount
+# balance_limite 
+
 
 
 User.plates = relationship("Plate", back_populates="user")
