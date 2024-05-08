@@ -16,21 +16,6 @@ get_refresh_token = HTTPBearer()
     "/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED
 )
 async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: AsyncSession = Depends(get_db)):
-    """
-    Endpoint for user registration.
-
-    Args:
-    - body (UserSchema): User data for registration.
-    - bt (BackgroundTasks): FastAPI BackgroundTasks for handling background tasks.
-    - request (Request): FastAPI Request object.
-    - db (AsyncSession): Async database session.
-
-    Returns:
-    - UserResponse: User data response.
-
-    Raises:
-    - HTTPException: If the account already exists.
-    """
     exist_user = await repositories_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(
@@ -44,21 +29,8 @@ async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: As
 
 @router.post("/login", response_model=TokenSchema)
 async def login(
-    body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+        body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
-    """
-    Endpoint for user login.
-
-    Args:
-    - body (OAuth2PasswordRequestForm): Login form data.
-    - db (AsyncSession): Async database session.
-
-    Returns:
-    - TokenSchema: Token response.
-
-    Raises:
-    - HTTPException: If invalid username, unconfirmed email, or invalid password.
-    """
     user = await repositories_users.get_user_by_username(body.username, db)
     if user is None:
         raise HTTPException(
@@ -86,22 +58,9 @@ async def login(
 
 @router.get("/refresh_token", response_model=TokenSchema)
 async def refresh_token(
-    credentials: HTTPAuthorizationCredentials = Depends(get_refresh_token),
-    db: AsyncSession = Depends(get_db),
+        credentials: HTTPAuthorizationCredentials = Depends(get_refresh_token),
+        db: AsyncSession = Depends(get_db),
 ):
-    """
-    Endpoint for refreshing access token.
-
-    Args:
-    - credentials (HTTPAuthorizationCredentials): HTTP Authorization credentials.
-    - db (AsyncSession): Async database session.
-
-    Returns:
-    - TokenSchema: Refreshed token response.
-
-    Raises:
-    - HTTPException: If invalid refresh token.
-    """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repositories_users.get_user_by_email(email, db)
@@ -120,21 +79,9 @@ async def refresh_token(
         "token_type": "bearer",
     }
 
+
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
-    """
-    Endpoint for confirming user email.
-
-    Args:
-    - token (str): Confirmation token.
-    - db (AsyncSession): Async database session.
-
-    Returns:
-    - dict: Confirmation message.
-
-    Raises:
-    - HTTPException: If verification error or email already confirmed.
-    """
     email = await auth_service.get_email_from_token(token)
     user = await repositories_users.get_user_by_email(email, db)
     if user is None:
@@ -148,21 +95,6 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
 @router.post('/request_email')
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: AsyncSession = Depends(get_db)):
-    """
-    Endpoint for requesting email confirmation.
-
-    Args:
-    - body (RequestEmail): RequestEmail schema containing email.
-    - background_tasks (BackgroundTasks): FastAPI BackgroundTasks for handling background tasks.
-    - request (Request): FastAPI Request object.
-    - db (AsyncSession): Async database session.
-
-    Returns:
-    - dict: Response message.
-
-    Raises:
-    - HTTPException: If email is already confirmed.
-    """
     user = await repositories_users.get_user_by_email(body.email, db)
 
     if user.confirmed:
@@ -170,4 +102,3 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     if user:
         background_tasks.add_task(send_email, user.email, user.username, str(request.base_url))
     return {"message": "Check your email for confirmation."}
-

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "parking-systeme"
+version = "0.1.0"
+description = ""
+authors = ["serhiikhkr <05hello.world11@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standart"], version = "^0.29.0"}
+sqlalchemy = "^2.0.30"
+pydantic-settings = "^2.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

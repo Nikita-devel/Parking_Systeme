@@ -51,8 +51,8 @@ class DatabaseSessionManager:
             await conn.run_sync(Base.metadata.create_all)
 
 
-
 sessionmanager = DatabaseSessionManager(config.DB_URL)
+
 
 async def get_db():
     """
@@ -68,4 +68,3 @@ async def get_db():
     async with sessionmanager.session() as session:
         print("ok")
         yield session
-
