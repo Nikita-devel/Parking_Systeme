@@ -17,12 +17,15 @@ get_refresh_token = HTTPBearer()
 )
 async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: AsyncSession = Depends(get_db)):
     exist_user = await repositories_users.get_user_by_email(body.email, db)
+    print(exist_user)
     if exist_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Account already exists"
         )
+    print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
     body.password = auth_service.get_password_hash(body.password)
     new_user = await repositories_users.create_user(body, db)
+    print(new_user)
     bt.add_task(send_email, new_user.email, new_user.username, str(request.base_url))
     return new_user
 
@@ -47,11 +50,11 @@ async def login(
     access_token = await auth_service.create_access_token(
         data={"sub": user.email, "test": "test11"}
     )
-    refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
-    await repositories_users.update_token(user, refresh_token, db)
+    token_refresh = await auth_service.create_refresh_token(data={"sub": user.email})
+    await repositories_users.update_token(user, token_refresh, db)
     return {
         "access_token": access_token,
-        "refresh_token": refresh_token,
+        "refresh_token": token_refresh,
         "token_type": "bearer",
     }
 

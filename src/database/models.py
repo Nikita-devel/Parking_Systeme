@@ -3,8 +3,8 @@ from datetime import date
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Column, Boolean
-from pydantic import BaseModel
+from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Boolean
+# from pydantic import BaseModel
 
 
 class Base(DeclarativeBase):
@@ -29,6 +29,9 @@ class User(Base):
     role: Mapped[Enum] = mapped_column("role", Enum(Role), default=Role.user, nullable=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
 
+    plates = relationship("Plate", back_populates="user")
+    balance = relationship("Balance", back_populates="user")
+
     @property
     def is_admin(self):
         return self.role == Role.admin
@@ -41,6 +44,7 @@ class Plate(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="plates")
+    sessions = relationship("Session", back_populates="plate")
 
 
 class Session(Base):
@@ -72,7 +76,3 @@ class ParkingProperties(Base):
     space_amount: Mapped[int] = mapped_column(Integer, default=20)
     balance_limit: Mapped[int] = mapped_column(Integer, default=100)
 
-
-User.balance = relationship("Balance", back_populates="users")
-User.plate = relationship("Plate", back_populates="users")
-Plate.session = relationship("Session", back_populates="plates")
