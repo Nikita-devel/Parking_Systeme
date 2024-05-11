@@ -8,7 +8,7 @@ from src.database.models import Base
 class DatabaseSessionManager:
     def __init__(self, url: str):
         """
-        DatabaseSessionManager constructor.
+        DatabaseSessionManager constructor..
 
         Parameters:
         - url (str): The URL of the database.
