@@ -6,9 +6,9 @@ class Settings(BaseSettings):
     DB_URL: str = "postgresql+asyncpg://postgres:goit1212@localhost:5432/postgres"
     SECRET_KEY_JWT: str = "974790aec4ac460bdc11645decad4dce7c139b7f2982b7428ec44e886ea588c6"
     ALGORITHM: str = "HS256"
-    MAIL_USERNAME: str = "kotozavrr@meta.ua"
-    MAIL_PASSWORD: str = "WZASwzas1212"
-    MAIL_FROM: str = "kotozavrr@meta.ua"
+    MAIL_USERNAME: str = "tryfastapi@meta.ua"
+    MAIL_PASSWORD: str = "Metasveta2024"
+    MAIL_FROM: str = "tryfastapi@meta.ua"
     MAIL_PORT: int = 465
     MAIL_SERVER: str = "smtp.meta.ua"
 

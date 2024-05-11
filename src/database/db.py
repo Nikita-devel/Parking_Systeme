@@ -34,9 +34,10 @@ class DatabaseSessionManager:
         session = self._session_maker()
         try:
             yield session
+            await session.commit()
         except Exception as err:
-            print(err)
             await session.rollback()
+            raise err
         finally:
             await session.close()
 
