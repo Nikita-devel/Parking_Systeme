@@ -3,8 +3,8 @@ from datetime import date
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Column, Boolean
-from pydantic import BaseModel
+from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Boolean
+# from pydantic import BaseModel
 
 
 class Base(DeclarativeBase):
@@ -29,6 +29,9 @@ class User(Base):
     role: Mapped[Enum] = mapped_column("role", Enum(Role), default=Role.user, nullable=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
 
+    balance = relationship("Balance", back_populates="user")
+    plate = relationship("Plate", back_populates="user")
+
     @property
     def is_admin(self):
         return self.role == Role.admin
@@ -40,7 +43,8 @@ class Plate(Base):
     plate: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="plates")
+    user: Mapped[relationship] = relationship("User", back_populates="plate")
+    session = relationship("Session", back_populates="plate")
 
 
 class Session(Base):
@@ -53,7 +57,7 @@ class Session(Base):
     total_coast: Mapped[int] = mapped_column(Integer, default=0)
     payment: Mapped[int] = mapped_column(Integer, default=0)
 
-    plate = relationship("Plate", back_populates="sessions")
+    plate: Mapped[relationship] = relationship("Plate", back_populates="session")
 
 
 class Balance(Base):
@@ -62,7 +66,7 @@ class Balance(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     total_balance: Mapped[int] = mapped_column(Integer, default=0)
 
-    user = relationship("User", back_populates="balance")
+    user: Mapped[relationship] = relationship("User", back_populates="balance")
 
 
 class ParkingProperties(Base):
@@ -72,7 +76,3 @@ class ParkingProperties(Base):
     space_amount: Mapped[int] = mapped_column(Integer, default=20)
     balance_limit: Mapped[int] = mapped_column(Integer, default=100)
 
-
-User.balance = relationship("Balance", back_populates="users")
-User.plate = relationship("Plate", back_populates="users")
-Plate.session = relationship("Session", back_populates="plates")

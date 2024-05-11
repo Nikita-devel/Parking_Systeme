@@ -18,9 +18,9 @@ async def get_current_user(user: User = Depends(auth_service.get_current_user)):
     return user
 
 
-@router.post("/assign-moderator-role/{user_id}", response_model=UserResponse)
-async def assign_moderator_role(username: str, db: AsyncSession = Depends(get_db),
-                                current_user: User = Depends(auth_service.get_current_user)):
+@router.post("/assign-admin-role/{username}", response_model=UserResponse)
+async def assign_admin_role(username: str, db: AsyncSession = Depends(get_db),
+                            current_user: User = Depends(auth_service.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
 
@@ -34,9 +34,9 @@ async def assign_moderator_role(username: str, db: AsyncSession = Depends(get_db
     return user
 
 
-@router.post("/remove-moderator-role/{user_id}", response_model=UserResponse)
-async def remove_moderator_role(user_id: int, db: AsyncSession = Depends(get_db),
-                                current_user: User = Depends(auth_service.get_current_user)):
+@router.post("/remove-admin-role/{user_id}", response_model=UserResponse)
+async def remove_admin_role(user_id: int, db: AsyncSession = Depends(get_db),
+                            current_user: User = Depends(auth_service.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
 
