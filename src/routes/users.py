@@ -55,7 +55,6 @@ async def get_users(db: AsyncSession = Depends(get_db),
                     current_user: User = Depends(auth_service.get_current_user)):
     """
     Endpoint to get a list of all users.
-
     Args:
     - db (AsyncSession): Async database session.
     - current_user (User): Current authenticated user.
