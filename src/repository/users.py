@@ -47,14 +47,14 @@ async def confirmed_email(email: str, db: AsyncSession):
     await db.commit()
 
 
-async def get_all_users(db: AsyncSession = Depends(get_db)):
-    stmt = select(User)
-    users = await db.execute(stmt)
-    return users.scalars().all()
+# async def get_all_users(db: AsyncSession = Depends(get_db)):
+#     stmt = select(User)
+#     users = await db.execute(stmt)
+#     return users.scalars().all()
 
 
-async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
-    stmt = select(User).filter_by(id=user_id)
-    user = await db.execute(stmt)
-    user = user.scalar_one_or_none()
-    return user
+# async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
+#     stmt = select(User).filter_by(id=user_id)
+#     user = await db.execute(stmt)
+#     user = user.scalar_one_or_none()
+#     return user
