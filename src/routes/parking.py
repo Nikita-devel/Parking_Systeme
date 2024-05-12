@@ -60,7 +60,7 @@ async def searching_plate(plate: str, db: AsyncSession = Depends(get_db),
                 return plate_sessions
 
             else:
-                return MessageResponse(message="This plate hasn't sessions")
+                return MessageResponse(message=" This plate hasn't sessions")
 
         else:
             return MessageResponse(message="Plate is not registered")
