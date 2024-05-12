@@ -19,7 +19,14 @@ async def set_parking_rate(new_rate: int, db: AsyncSession = Depends(get_db)):
     rate = await db.execute(stmt)
     rate = rate.first()
 
-    rate.rate = new_rate
-    await db.commit()
-    await db.refresh(rate)
-    return rate
+    if rate is None:
+        create_rate = ParkingProperties(rate=new_rate)
+        db.add(create_rate)
+        await db.commit()
+        await db.refresh(create_rate)
+        return create_rate
+    else:
+        rate.rate = new_rate
+        await db.commit()
+        await db.refresh(rate)
+        return rate
