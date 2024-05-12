@@ -18,13 +18,13 @@ async def get_current_user(user: User = Depends(auth_service.get_current_user)):
     return user
 
 
-@router.post("/assign-admin-role/{username}", response_model=UserResponse)
-async def assign_admin_role(username: str, db: AsyncSession = Depends(get_db),
+@router.post("/assign-admin-role/{email}", response_model=UserResponse)
+async def assign_admin_role(email: str, db: AsyncSession = Depends(get_db),
                             current_user: User = Depends(auth_service.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    user = await repositories_users.get_user_by_username(username, db)
+    user = await repositories_users.get_user_by_email(email, db)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -34,13 +34,13 @@ async def assign_admin_role(username: str, db: AsyncSession = Depends(get_db),
     return user
 
 
-@router.post("/remove-admin-role/{user_id}", response_model=UserResponse)
-async def remove_admin_role(user_id: int, db: AsyncSession = Depends(get_db),
+@router.post("/remove-admin-role/{username}", response_model=UserResponse)
+async def remove_admin_role(username: str, db: AsyncSession = Depends(get_db),
                             current_user: User = Depends(auth_service.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    user = await repositories_users.get_user_by_id(user_id, db)
+    user = await repositories_users.get_user_by_username(username, db)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -50,12 +50,23 @@ async def remove_admin_role(user_id: int, db: AsyncSession = Depends(get_db),
     return user
 
 
-async def set_admin_role(email: str, db: AsyncSession = Depends(get_db)):
-    user = await repositories_users.get_user_by_email(email, db)
-    if user:
-        user.role = Role.admin
-        await db.commit()
-        await db.refresh(user)
-        return {"message": f"User with email {email} now has admin role"}
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
+@router.get("/all_users", response_model=list[UserResponse])
+async def get_users(db: AsyncSession = Depends(get_db),
+                    current_user: User = Depends(auth_service.get_current_user)):
+    """
+    Endpoint to get a list of all users.
+
+    Args:
+    - db (AsyncSession): Async database session.
+    - current_user (User): Current authenticated user.
+
+    Returns:
+    - List[UserResponse]: List of user information responses.
+
+    Raises:
+    - HTTPException: If the current user is not an admin.
+    """
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    users = await repositories_users.get_all_users(db)
+    return users

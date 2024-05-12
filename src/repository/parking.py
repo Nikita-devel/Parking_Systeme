@@ -3,14 +3,18 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
-from src.database.models import User, Role, ParkingProperties
+from src.database.models import User, Role, ParkingProperties, Session, Plate
 from src.schemas.user import UserSchema
 
 
 async def get_parking_properties(db: AsyncSession = Depends(get_db)):
     stmt = select(ParkingProperties)
     parking_properties = await db.execute(stmt)
-    parking_properties = parking_properties.first()
+    parking_properties = parking_properties.scalar_one_or_none()
+
+    if parking_properties is None:
+        return None
+
     return parking_properties
 
 
@@ -48,3 +52,25 @@ async def set_balance_limit(new_balance_limit: int, db: AsyncSession = Depends(g
         await db.commit()
         await db.refresh(parking_properties)
         return parking_properties
+
+
+async def get_sessions_for_plate(plate_id: int, db: AsyncSession = Depends(get_db())):
+    stmt = select(Session).filter_by(plate_id=plate_id)
+    plate_sessions = await db.execute(stmt)
+    plate_sessions = plate_sessions.scalars().all()
+
+    if plate_sessions:
+        return plate_sessions
+
+    else:
+        return None
+
+
+async def search_plate(plate: str, db: AsyncSession = Depends(get_db())):
+    stmt = select(Plate).filter_by(plate=plate)
+    plate_info = await db.execute(stmt)
+    plate_info = plate_info.scalar_one_or_none()
+
+    return plate_info
+
+
