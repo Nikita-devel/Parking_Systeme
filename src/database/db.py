@@ -67,5 +67,4 @@ async def get_db():
     """
     await sessionmanager.create_tables()
     async with sessionmanager.session() as session:
-        print("ok")
         yield session
