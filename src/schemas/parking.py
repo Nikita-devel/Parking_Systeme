@@ -4,7 +4,8 @@ from src.database.models import Role
 
 
 class ParkingRateSchema(BaseModel):
-    """
-    Pydantic model for creating a new user.
-    """
-    rate: int = Field(min_length=1, max_length=50)
+    rate: int = Field(ge=1, le=500)
+
+
+class ParkingBalanceLimitSchema(BaseModel):
+    balance_limit: int = Field(ge=1, le=5000)
