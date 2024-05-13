@@ -105,3 +105,48 @@ async def delete_plate(plate: str, db: AsyncSession = Depends(get_db())):
         await db.delete(check_plate)
         await db.commit()
         return f"Номер {plate} был успешно удален"
+
+
+async def show_history_sessions(db: AsyncSession = Depends(get_db())):
+    stmt = select(Session)
+    sessions = await db.execute(stmt)
+    sessions = sessions.scalars().all()
+
+    if len(sessions) == 0:
+        return None
+
+    else:
+        return sessions
+
+
+async def add_plate_to_blacklist(plate: str, db: AsyncSession = Depends(get_db())):
+    stmt = select(Plate).filter_by(plate=plate)
+    plate_info = await db.execute(stmt)
+    plate_info = plate_info.scalar_one_or_none()
+
+    if plate_info is None:
+        return None
+
+    else:
+        plate_info.black_mark = True
+        await db.commit()
+        await db.refresh(plate_info)
+        return f"Номер {plate} добавлен в Blacklist"
+
+
+async def delete_plate_from_blacklist(plate: str, db: AsyncSession = Depends(get_db())):
+    stmt = select(Plate).filter_by(plate=plate)
+    plate_info = await db.execute(stmt)
+    plate_info = plate_info.scalar_one_or_none()
+
+    if plate_info is None:
+        return None
+
+    elif not plate_info.black_mark:
+        return f"Номер {plate} не внесен в Blacklist"
+
+    else:
+        plate_info.black_mark = False
+        await db.commit()
+        await db.refresh(plate_info)
+        return f"Номер {plate} удален с Blacklist"

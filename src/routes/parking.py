@@ -78,12 +78,13 @@ async def add_new_plate(plate: str, db: AsyncSession = Depends(get_db),
         if new_plate_to_bd is None:
             raise HTTPException(status_code=409, detail="This plate is already registered")
 
-        return PlateSchema(id=new_plate_to_bd.id, plate=new_plate_to_bd.plate, user_id=new_plate_to_bd.user_id)
+        return PlateSchema(id=new_plate_to_bd.id, plate=new_plate_to_bd.plate, user_id=new_plate_to_bd.user_id,
+                           black_mark=new_plate_to_bd.black_mark)
 
 
 @router.post("/remove_plate/{plate}", response_model=MessageResponse)
 async def remove_plate(plate: str, db: AsyncSession = Depends(get_db),
-                        current_user: User = Depends(auth_service.get_current_user)):
+                       current_user: User = Depends(auth_service.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
 
@@ -91,3 +92,42 @@ async def remove_plate(plate: str, db: AsyncSession = Depends(get_db),
         result_delete_plate = await repositories_parking.delete_plate(plate, db)
         return MessageResponse(message=result_delete_plate)
 
+
+@router.get("/show_history_sessions", response_model=Union[list[SessionInfoSchema], MessageResponse])
+async def show_history_sessions(db: AsyncSession = Depends(get_db),
+                                current_user: User = Depends(auth_service.get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    sessions = await repositories_parking.show_history_sessions(db)
+
+    if sessions is None:
+        return MessageResponse(message="Нет ни одной записи")
+    return sessions
+
+
+@router.put("/add_plate_to_blacklist/{plate}", response_model=MessageResponse)
+async def add_plate_to_blacklist(plate: str, db: AsyncSession = Depends(get_db),
+                                 current_user: User = Depends(auth_service.get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    plate_to_blacklist = await repositories_parking.add_plate_to_blacklist(plate, db)
+
+    if plate_to_blacklist is None:
+        return MessageResponse(message="Указанного номера нет в БД")
+    else:
+        return MessageResponse(message=plate_to_blacklist)
+
+
+@router.put("/delete_plate_from_blacklist/{plate}", response_model=MessageResponse)
+async def delete_plate_from_blacklist(plate: str, db: AsyncSession = Depends(get_db),
+                                      current_user: User = Depends(auth_service.get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    plate_from_blacklist = await repositories_parking.delete_plate_from_blacklist(plate, db)
+
+    if plate_from_blacklist is None:
+        return MessageResponse(message="Указанного номера нет в БД")
+    else:
+        return MessageResponse(message=plate_from_blacklist)

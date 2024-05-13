@@ -44,6 +44,7 @@ class Plate(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     plate: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     user_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    black_mark: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
 
     user: Mapped[relationship] = relationship("User", back_populates="plate")
     session = relationship("Session", back_populates="plate")
