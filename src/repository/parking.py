@@ -74,3 +74,34 @@ async def search_plate(plate: str, db: AsyncSession = Depends(get_db())):
     return plate_info
 
 
+async def adding_new_plate(plate: str, user_id: int = None, db: AsyncSession = Depends(get_db())):
+    new_plate = Plate(plate=plate, user_id=user_id)
+
+    stmt = select(Plate).filter_by(plate=plate)
+    check_plate = await db.execute(stmt)
+    check_plate = check_plate.scalar_one_or_none()
+
+    if check_plate is None:
+        db.add(new_plate)
+        await db.commit()
+        await db.refresh(new_plate)
+        return new_plate
+    else:
+        return None
+
+
+async def delete_plate(plate: str, db: AsyncSession = Depends(get_db())):
+    stmt = select(Plate).filter_by(plate=plate)
+    check_plate = await db.execute(stmt)
+    check_plate = check_plate.scalar_one_or_none()
+
+    if check_plate is None:
+        return f"{plate} номера нет в БД"
+
+    elif check_plate.user_id is not None:
+        return "Вы не можете удалить номер зарегистрированного пользователя"
+
+    else:
+        await db.delete(check_plate)
+        await db.commit()
+        return f"Номер {plate} был успешно удален"

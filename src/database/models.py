@@ -1,10 +1,12 @@
 import enum
 from datetime import date
+from typing import Optional
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Boolean
 # from pydantic import BaseModel
+
 
 
 class Base(DeclarativeBase):
@@ -41,7 +43,7 @@ class Plate(Base):
     __tablename__ = "plates"
     id: Mapped[int] = mapped_column(primary_key=True)
     plate: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
 
     user: Mapped[relationship] = relationship("User", back_populates="plate")
     session = relationship("Session", back_populates="plate")
