@@ -54,10 +54,10 @@ class Session(Base):
     __tablename__ = "sessions"
     id: Mapped[int] = mapped_column(primary_key=True)
     entrance_time: Mapped[date] = mapped_column(DateTime, default=func.now)
-    exit_time: Mapped[date] = mapped_column(DateTime)
+    exit_time: Mapped[date] = mapped_column(DateTime, nullable=True)
     plate_id: Mapped[int] = mapped_column(Integer, ForeignKey("plates.id"))
-    total_hours_spent: Mapped[int] = mapped_column(Integer, default=0)
-    total_coast: Mapped[int] = mapped_column(Integer, default=0)
+    total_hours_spent: Mapped[int] = mapped_column(Integer, nullable=True)
+    total_coast: Mapped[int] = mapped_column(Integer, nullable=True)
     payment: Mapped[int] = mapped_column(Integer, default=0)
 
     plate: Mapped[relationship] = relationship("Plate", back_populates="session")
