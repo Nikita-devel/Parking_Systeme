@@ -8,7 +8,7 @@ from src.database.models import Base
 class DatabaseSessionManager:
     def __init__(self, url: str):
         """
-        DatabaseSessionManager constructor.
+        DatabaseSessionManager constructor..
 
         Parameters:
         - url (str): The URL of the database.
@@ -34,9 +34,10 @@ class DatabaseSessionManager:
         session = self._session_maker()
         try:
             yield session
+            await session.commit()
         except Exception as err:
-            print(err)
             await session.rollback()
+            raise err
         finally:
             await session.close()
 
@@ -51,8 +52,8 @@ class DatabaseSessionManager:
             await conn.run_sync(Base.metadata.create_all)
 
 
-
 sessionmanager = DatabaseSessionManager(config.DB_URL)
+
 
 async def get_db():
     """
@@ -66,6 +67,4 @@ async def get_db():
     """
     await sessionmanager.create_tables()
     async with sessionmanager.session() as session:
-        print("ok")
         yield session
-

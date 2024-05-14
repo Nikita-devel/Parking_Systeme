@@ -3,17 +3,14 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_URL: str = "postgresql+asyncpg://postgres:wzas1212@localhost:5000/hw11"
-    SECRET_KEY_JWT: str = ""
+    DB_URL: str = "postgresql+asyncpg://postgres:goit1212@localhost:5432/postgres"
+    SECRET_KEY_JWT: str = "974790aec4ac460bdc11645decad4dce7c139b7f2982b7428ec44e886ea588c6"
     ALGORITHM: str = "HS256"
-    MAIL_USERNAME: str = ""
-    MAIL_PASSWORD: str = ""
-    MAIL_FROM: str = "postgres@localhost"
-    MAIL_PORT: int = 5432
-    MAIL_SERVER: str = "localhost"
-    CLD_NAME: str = "abc"
-    CLD_API_KEY: int = 326488457974591
-    CLD_API_SECRET: str = "secret"
+    MAIL_USERNAME: str = "tryfastapi@meta.ua"
+    MAIL_PASSWORD: str = "Metasveta2024"
+    MAIL_FROM: str = "tryfastapi@meta.ua"
+    MAIL_PORT: int = 465
+    MAIL_SERVER: str = "smtp.meta.ua"
 
     @field_validator("ALGORITHM")
     @classmethod
