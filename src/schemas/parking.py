@@ -14,9 +14,9 @@ class ParkingBalanceLimitSchema(BaseModel):
 
 class SessionInfoSchema(BaseModel):
     entrance_time: datetime = Field()
-    exit_time: datetime = Field()
-    total_hours_spent: int = Field()
-    total_coast: int = Field()
+    exit_time: Optional[datetime] = Field()
+    total_hours_spent: Optional[int] = Field()
+    total_coast: Optional[int] = Field()
     payment: int = Field()
 
 
