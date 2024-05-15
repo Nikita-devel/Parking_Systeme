@@ -8,7 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 # from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from src.routes import users, auth, parking
+from src.routes import users, auth, parking, parking_services
 
 app = FastAPI()
 
@@ -52,6 +52,7 @@ user_agent_ban_list = [r"Googlebot", r"Python-urllib"]
 app.include_router(auth.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(parking.router, prefix="/api")
+app.include_router(parking_services.router, prefix="/api")
 
 # templates = Jinja2Templates(directory=BASE_DIR / "src" / "templates")
 
